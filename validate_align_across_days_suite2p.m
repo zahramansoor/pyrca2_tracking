@@ -12,60 +12,71 @@ d11=load('C:\Users\Han\Documents\MATLAB\CellReg\ZD_Test_20230119\221211_Fall.mat
 days = [d06,d07,d08,d09,d11];
 
 % colormap to iterate thru
-ctab = hsv(20);
+ctab = hsv(1080);
 % randomize cell #
-cl=randi(1080,1,20);
+%cl=randi(1080,1,20);
 figure;
 %day 6
-subplot(2,3,1) % 2 rows, 3 column, 1 pos
+ax1=subplot(2,3,1); % 2 rows, 3 column, 1 pos
 imagesc(d06.ops.meanImg)%imagesc(mat.ops.meanImg);
 colormap('gray')
 hold on;
-for i=1:20
-    plot(stat{1,cl(i)}.xpix, stat{1,cl(i)}.ypix, 'Color', ctab(i,:)) % i here is the day
+for i=1:1080
+    if iscell(i)
+        plot(stat{1,i}.xpix, stat{1,i}.ypix, 'Color', [ctab(i,:) 0.2]) % i here is the day
+    end
 end
 axis off
-title('day 6')
-%day 6
-subplot(2,3,2) % 2 rows, 3 column, 1 pos
+title('day 1')
+%day 2
+ax2=subplot(2,3,2); % 2 rows, 3 column, 1 pos
 imagesc(d07.ops.meanImg)%imagesc(mat.ops.meanImg);
 colormap('gray')
 hold on;
-for i=1:20
-    plot(stat{1,cl(i)}.xpix, stat{1,cl(i)}.ypix, 'Color', ctab(i,:))
+for i=1:1080
+    if iscell(i)
+        plot(stat{1,i}.xpix, stat{1,i}.ypix, 'Color', [ctab(i,:) 0.2])
+    end
 end
 axis off
-title('day 7')
-%day 6
-subplot(2,3,3) % 2 rows, 3 column, 1 pos
+title('day 2')
+%day 3
+ax3=subplot(2,3,3); % 2 rows, 3 column, 1 pos
 imagesc(d08.ops.meanImg)%imagesc(mat.ops.meanImg);
 colormap('gray')
 hold on;
-for i=1:20
-    plot(stat{1,cl(i)}.xpix, stat{1,cl(i)}.ypix, 'Color', ctab(i,:))
+for i=1:1080
+    if iscell(i)
+        plot(stat{1,i}.xpix, stat{1,i}.ypix, 'Color', [ctab(i,:) 0.2])
+    end
 end
 axis off
-title('day 8')
-%day 6
-subplot(2,3,4) % 2 rows, 3 column, 1 pos
+title('day 3')
+%day 4
+ax4=subplot(2,3,4); % 2 rows, 3 column, 1 pos
 imagesc(d09.ops.meanImg)%imagesc(mat.ops.meanImg);
 colormap('gray')
 hold on;
-for i=1:20
-    plot(stat{1,cl(i)}.xpix, stat{1,cl(i)}.ypix, 'Color', ctab(i,:))
+for i=1:1080
+    if iscell(i)
+        plot(stat{1,i}.xpix, stat{1,i}.ypix, 'Color', [ctab(i,:) 0.2])
+    end
 end
 axis off
-title('day 9')
-%day 6
-subplot(2,3,5) % 2 rows, 3 column, 1 pos
+title('day 4')
+%day 5
+ax5=subplot(2,3,5); % 2 rows, 3 column, 1 pos
 imagesc(d11.ops.meanImg)%imagesc(mat.ops.meanImg);
 colormap('gray')
 hold on;
-for i=1:20% to account for cell not detected in this day
-    plot(stat{1,cl(i)}.xpix, stat{1,cl(i)}.ypix, 'Color', ctab(i,:))
+for i=1:1080% to account for cell not detected in this day
+    if iscell(i)
+        plot(stat{1,i}.xpix, stat{1,i}.ypix, 'Color', [ctab(i,:) 0.2])
+    end
 end
 axis off
-title('day 11')
+title('day 5')
+linkaxes([ax1 ax2 ax3 ax4 ax5],'xy')
 % savefig(sprintf("C:\\Users\\Han\\Documents\\Zahra\\suite2p_align\\cell_%03d.fig",cl))
 
 savefig(sprintf("C:\\Users\\Han\\Documents\\Zahra\\suite2p_align\\cells.fig"))
