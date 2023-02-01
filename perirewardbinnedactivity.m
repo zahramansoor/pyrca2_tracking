@@ -18,7 +18,8 @@ for rr = 1:length(Rewindx)
             if sum(currentidxlogical)>0
                 checkidx = checks{currentidxlogical};
                 
-                rewdFF(bin,:,rr) = nanmean(dFF(checkidx,:),1);
+                rewdFF(bin,:,rr) = nanmean(dFF(checkidx,:),1); %ZD changed based on input structure 
+                                                                                        % (per cell that is tracked over days)
             else
                 rewdFF(bin,:,rr) = NaN;
             end
