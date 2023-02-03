@@ -2,11 +2,11 @@
 % get cells detected in cellreg and do analysis
 
 clear all
-load('C:\Users\Han\Documents\MATLAB\CellReg\ZD_Test_20230130\Results\cellRegistered_20230130_220405.mat')
+load('C:\Users\Han\Documents\MATLAB\CellReg\ZD_Test_20230201\Results\cellRegistered_20230201_154819.mat')
 % find cells in all sessions
 [r,c] = find(cell_registered_struct.cell_to_index_map~=0);
 [counts, bins] = hist(r,1:size(r,1));
-sessions=20;% specify no of sessions
+sessions=4;% specify no of sessions
 cindex = bins(counts==sessions); % finding cells across all 5 sessions
 commoncells=zeros(length(cindex),sessions);
 for ci=1:length(cindex)
@@ -14,21 +14,21 @@ for ci=1:length(cindex)
 end
  
 % load mats from all days
-fls = dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');
+fls = dir('Z:\imaging_yc\concat\*YC_Fall.mat');%dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');
 days = cell(1, length(fls));
 for fl=1:length(fls)
     day = fls(fl);
     days{fl} = load(fullfile(day.folder,day.name));
 end
 % load('Z:\\dff_221206-30.mat')
-if ~exist('dff', 'var')
-    % calculate dff across all
-    for i=1:length(fls)
-        dff{i} = redo_dFF(days{i}.F, 31.25, 20, days{i}.Fneu);
-        disp(i)
-    end
-    save('Z:\\dff_221206-30.mat', 'dff')
+dff = cell(1,sessions);
+% calculate dff across all
+for i=1:length(fls)
+    dff{i} = redo_dFF(days{i}.F, 31.25, 20, days{i}.Fneu);
+    disp(i)
 end
+save('Z:\\dff_221206-30_per_week_concat.mat', 'dff', '-v7.3')
+
 %%% test commoncell#1 - plot across sessions
 % plot all cells with legend
 % close all; 
@@ -49,40 +49,40 @@ end
 %     savefig(sprintf('Z:\\20230124_run\\cellregtest_dff_cell_no_%03d_day_%03d.fig', cll, i))
 % end
 %%
-% align 'common cells' with reward and locomotion?
-% with HRZ, likely need to align in 'reward zone'
-
+% align each common cells across all days with an individual mask
 ctab = hsv(length(commoncells));
 % remember this is the cell index, so you have to find the cell in the
 % original F mat
-for i=1:length(commoncells)
+cc=commoncells(250:end,:);
+for i=1:length(cc)
     %multi plot of cell mask across all 5 days
     figure(i); 
     axes=cell(1,sessions);
     for ss=1:sessions        
         day=days(ss);day=day{1};
-        axes{ss}=subplot(4,5,ss); % 2 rows, 3 column, 1 pos; 20 days
-        imagesc(day.ops.max_proj) %meanImg
+        axes{ss}=subplot(2,2,ss); % 2 rows, 3 column, 1 pos; 20 days
+        imagesc(day.ops.meanImg) %meanImg or max_proj
         colormap('gray')
         hold on;
         try
             plot(day.stat{1,commoncells(i,ss)}.xpix, day.stat{1,commoncells(i,ss)}.ypix, 'Color', [ctab(i,:) 0.3]);
         end
         axis off
-        title(sprintf('day %i', ss))
+        title(sprintf('week %i', ss)) %sprintf('day %i', ss)
     end
     linkaxes([axes{:}], 'xy')
-%     savefig(sprintf("Z:\\cellreg1month_commoncellmasks\\cell_%03d.fig",i))
+    %savefig(sprintf("Z:\\suite2pconcat1month_commoncellmasks\\cell_%03d.fig",i+250)) %changed to reflect subset of cells plotted
 end
 
 %%
+% align all cells across all days in 1 fig
 % colormap to iterate thru
 ctab = hsv(length(commoncells));
 figure;
 axes=zeros(1,sessions);
 for ss=1:sessions
     day=days(ss);day=day{1};
-    axes(ss)=subplot(4,5,ss); % 2 rows, 3 column, 1 pos; 20 days
+    axes(ss)=subplot(2,2,ss);%(4,5,ss); % 2 rows, 3 column, 1 pos; 20 days
     imagesc(day.ops.meanImg)
     colormap('gray')
     hold on;
@@ -95,7 +95,7 @@ for ss=1:sessions
     title(sprintf('day %i', ss))
 end
 linkaxes(axes, 'xy')
-savefig(sprintf("Z:\\202301030cells.fig"))
+savefig(sprintf("Z:\\202300201cells.fig"))
 
 %%
 % plot F (and ideally dff) over ypos
@@ -189,7 +189,7 @@ end
 %%
 % plot
 %cellno=34; % cell to align
-optodays=[5,6,7,9,10,11,13,14,16,17,18];
+optodays=[];%5,6,7,9,10,11,13,14,16,17,18];
 for cellno=1:length(commoncells) %or align all cells hehe
     figure;
     for d=1:length(days)
