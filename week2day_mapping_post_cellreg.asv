@@ -20,15 +20,33 @@ for fl=1:length(fls)
     day = fls(fl);
     days{fl} = load(fullfile(day.folder,day.name));
 end
-% load('Z:\\dff_221206-30.mat')
-dff = cell(1,sessions);
-% calculate dff across all
-% for i=1:length(fls)
-%     dff{i} = redo_dFF(days{i}.F, 31.25, 20, days{i}.Fneu);
-%     disp(i)
-% end
-% save('Z:\\dff_221206-30_per_week_concat.mat', 'dff', '-v7.3')
-% 
+
+% find map from week 1 to those tracked across weeks in previous run
+% cells found thru cellreg
+weeks=load('C:\Users\Han\Documents\MATLAB\CellReg\ZD_across4weeks_20230201\Results\cellRegistered_20230201_154819.mat');
+% find cells in all sessions
+[r,c] = find(weeks.cell_registered_struct.cell_to_index_map~=0);
+[counts, bins] = hist(r,1:size(r,1));
+sessions=4;% specify no of sessions
+cindex = bins(counts==sessions); % finding cells across all 5 sessions
+commoncells_4weeks=zeros(length(cindex),sessions);
+for ci=1:length(cindex)
+    commoncells_4weeks(ci,:)=weeks.cell_registered_struct.cell_to_index_map(cindex(ci),:);
+end
+
+% concat week to week map
+% in week map, week 1 is the last element (e.g. 5), whereas in the concat
+% week map, it is the first element (bc 'week 1')
+week1_across_weeks = commoncells_4weeks(:,1);
+% only cells that have both a week to day and week to week mapping
+for i=1:5
+    week1_mapped2days_across_weeks(:,i) = commoncells(ismember(commoncells(:,5), week1_across_weeks),i);
+end
+% now these are cells that are from week 1 that are mapped to the cells
+% that are common across weeks
+% next step is to do this for each week and save individual mats of this
+% map; remember that the last element is always the ROIs of the
+% concatenated day
 %%
 % align each common cells across all days with an individual mask
 ctab = hsv(length(commoncells));
