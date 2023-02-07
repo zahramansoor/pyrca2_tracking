@@ -113,7 +113,136 @@ all_spks= NaN(size(templ_all.F));
 %structure with single.stat for each single day, ROIs info
 % day.stat(day,1);
 endIdx=0;
-                                                
+
+
+%daysnm={'221206_YC', '221207_YC', '221208_YC', '221209_YC'};
+%daysnm={'221211_YC', '221212_YC', '221213_YC', '221214_YC', '221215_YC', '221216_YC', '221217_YC'};
+%daysnm={'221220_YC', '221221_YC', '221222_YC'};
+daysnm={'221225_YC', '221226_YC', '221227_YC', '221228_YC', '221229_YC', '221230_YC'};
+for j = 1:numDays
+    %inside loop with numDays, cd to dir with file
+    cd (single_paths{j,1}); %set path
+    single=load(join([daysnm{j},'_Fall.mat'],''));%load single day, in single day folder
+    %save Fall.mat for each day with as d1_Fall, d2_Fall, etc
+    singles_all(j,:)=single;%gave mismatch error once when "redcell" was field in one file but not others
+
+    singleFrames=size(single.F,2);%num frames per day
+    startIdx=endIdx+1;%start of day, within all frames stack
+    endIdx=endIdx+singleFrames;%end  of day, within all frames stack
+    F_single=single.F';%transpose needed for corrcoef
+    %could also do Fneu
+    F_all_single=F_all(startIdx:endIdx,:);%size F_all to single day to single day
+    %loop variables
+    M=zeros(size(rois,1),1);%max r value per single all_roi to all d1_roi correlations
+    I=zeros(size(rois,1),1);%Index of max r value (corresponding to best d1_roi match
+    cent_all_xy=zeros(size(rois,1),2);%first column x, second y
+    cent_single_xy=zeros(size(rois,1),2);
+    cent_dist=zeros(size(rois,1),1);
+    single_r_p=zeros(size(rois,1),1);
+
+    concat_all_single=([F_all_single F_single]);%concatenate all and single F traces
+    [single_r,single_p]=corrcoef(concat_all_single);%get r and p values for correlations of all to single
+    figure, imagesc(single_r(1:size(F_all_single,2),(size(F_all_single,2)+1):end));%corr of all template cells found, not just iscell
+    title('Corrcoef of All Template Cells Found');
+
+    for i = 1:size(rois,1) %get single with highest r to all, +centroid dist
+        [M(i,1),I(i,1)]=max(single_r(rois(i,1),(size(F_all_single,2)+1):end));
+        single_r_p(i,1)=single_p(I(i,1));
+        cent_all_xy(i,1)=mean(templ_all.stat{1,rois(i,1)}.xpix);
+        cent_all_xy(i,2)=mean(templ_all.stat{1,rois(i,1)}.ypix);
+        cent_single_xy(i,1)=mean(single.stat{1,I(i,1)}.xpix);
+        cent_single_xy(i,2)=mean(single.stat{1,I(i,1)}.ypix);
+        cent_dist(i,1)=pdist([cent_all_xy(i,:);cent_single_xy(i,:)],'euclidean');
+        %into array across days, j=day, i=roi
+        all_M(i,j)=M(i,1);
+        all_I(i,j)=I(i,1);
+        all_cent_dist(i,j)=cent_dist(i,1);
+        %fill in look up table across days      
+        if cent_dist(i,1) < max_cent_dist && M(i,1)>min_r%if centroids close and r high, write into LUT
+            LUT(i,j)=I(i,1);
+            all_F(rois(i,1),startIdx:endIdx)= single.F(I(i,1),:);
+            all_Fneu(rois(i,1),startIdx:endIdx)= single.Fneu(I(i,1),:);
+            all_spks(rois(i,1),startIdx:endIdx)= single.spks(I(i,1),:);
+    %         all_Fc2(rois(i,1),startIdx:endIdx)= single.Fc2(I(i,1),:);
+    %         all_Fc3(rois(i,1),startIdx:endIdx)= single.Fc3(I(i,1),:);    
+        else%if centroids far or r low, LUT = NaN and F = 0
+            LUT(i,j)=NaN;  
+            all_F(rois(i,1),startIdx:endIdx)= 0;
+            all_Fneu(rois(i,1),startIdx:endIdx)= 0;
+            all_spks(rois(i,1),startIdx:endIdx)= 0;
+    %         all_Fc2(rois(i,1),startIdx:endIdx)= 0; %uncomment when have Fc2
+    %         all_Fc3(rois(i,1),startIdx:endIdx)= 0;
+        end   
+    end
+
+    figure,scatter(M(:,1),cent_dist(:,1));%max r vs. centroid dist, most with high r have dist<15pix
+    title('Max r vs. ROI centroid distance');
+    ylabel('ROI Centroid Distance (pixels)')
+    xlabel('Max R')
+    frames(j,1)= singleFrames;%keep track of #frames per day
+    dayStart(j,1)=startIdx;%keep track 1st frame of days
+    dayEnd(j,1)=endIdx;%keep track of last frame of days   
+    
+    
+    %uncomment to see ROI fits in loop. Can also do posthoc with...
+    
+    %option to see ROI fits or not    
+    prompt = {['Inspect ROIs, Day ',num2str(j)]};
+    dlgtitle = 'Inspect ROI alignment?';
+    dims = [1 35];
+    definput = {'1'}; %default files
+    answer = inputdlg(prompt,dlgtitle,dims,definput);
+    inspect_rois=str2num(answer{1});
+    
+    for i = 1:size(rois,1) %graphs to loop through r, F comparison, rois
+        if inspect_rois==1 %option to skip looking at roi graphs
+%             f=figure;
+%             f.WindowState='maximized';
+%             subplot(3,2,1);
+            subplot(2,2,1);
+            annotation('textbox', [0.5, 0.9, 0.1, 0.1], 'String', ['Template ROI ' num2str(rois(i,1))]);
+            annotation('textbox', [0.5, 0.85, 0.1, 0.1], 'String', ['Single ROI ' num2str(I(i,1))]);
+            plot(single_r(rois(i,1),(size(F_all_single,2)+1):end));
+            ylim([0 1])
+            ylabel('corr')
+            xlabel('ROIs')
+            str=sprintf('r = %f',round(M(i,1),2));
+            annotation('textbox', [0.3, 0.8, 0.1, 0.1], 'String', str);%working on inserting text box with r and later dist
+%             str=sprintf('p = %f', single_r_p(i,1));
+%             annotation('textbox', [0.3, 0.8, 0.1, 0.1], 'String', str);%working on inserting text box with r and later dist
+%             subplot(3,2,3);
+%             p1=plot(F_all_single(:,rois(i,1))); hold on;
+%             p2=plot(F_single(:,I(i,1)));
+%             p1.Color(4) = 1;
+%             p2.Color(4) = 0.1; hold off;
+%             %     plot(1:singleFrames,F_all_single(:,rois(i,1)),1:singleFrames,F_single(:,I(i,1)));
+%             str=sprintf('centroid dist = %f pixels',cent_dist(i,1));
+%             annotation('textbox', [0.6, 0.8, 0.1, 0.1], 'String', str);
+%             subplot(3,2,[2,4]);
+            subplot(2,2,2);
+            imshow((single.ops.meanImg))%display white, if want auto bright: imshow((single.ops.meanImg),[])
+            hold on
+            scatter(templ_all.stat{1,rois(i,1)}.xpix,templ_all.stat{1,rois(i,1)}.ypix,'.','MarkerFaceAlpha',0.01,'MarkerEdgeAlpha',0.01)
+            scatter(single.stat{1,I(i,1)}.xpix,single.stat{1,I(i,1)}.ypix,'.','MarkerFaceAlpha',0.01,'MarkerEdgeAlpha',0.01)
+            title('Template and Single ROI');
+            hold off
+            %plot original F and all_F, either single F or zeros
+%             subplot(3,2,5);
+            subplot(2,2,3);
+            plot(all_F(rois(i,1),startIdx:endIdx));
+            title('Template ROI');
+%             subplot(3,2,6);
+            subplot(2,2,4);
+            plot(F_all_single(:,rois(i,1)),'r');
+             title('Single ROI');
+            ylabel('dF/F')
+            xlabel('frames')
+            pause
+            close all
+        end
+    end    
+end
+
 % all_F= all_F';%transpose back to original
 % all_Fc2= all_Fc2';
 % all_Fc3= all_Fc3';
@@ -122,7 +251,7 @@ stripped_name=regexprep(all_file,'.mat','');
 currfile=strcat(stripped_name,'_%dd_align.mat');
 currfile=sprintf(currfile,numDays);
 currfilename=[all_path currfile];
-save(currfilename,'-v7.3');    %need -v7.3 MAT file or variable is too big to save
+save(currfilename, '-v7.3');    %need -v7.3 MAT file or variable is too big to save
 
 file_list=strcat(stripped_name,'_%dd_file_list.mat');
 file_list=sprintf(file_list,numDays);
