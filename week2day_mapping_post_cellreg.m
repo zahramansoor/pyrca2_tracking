@@ -181,6 +181,9 @@ end
 % remember this is the cell index, so you have to find the cell in the
 % original F mat
 cc=cellmap2dayacrossweeks(all(cellmap2dayacrossweeks,2),:);%only gets non zero elements
+%save
+save("Z:\week2day_mapping_cellreg\commoncells_4weeks_week2daymap.mat", "cc")
+%%
 ctab = hsv(length(cc));
 
 % load mats from all days

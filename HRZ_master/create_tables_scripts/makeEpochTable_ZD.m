@@ -30,8 +30,6 @@ for this_day = 1:size(Settings.paths,1)
         end
         ybinned = l.ybinned;
 
-
-
         if exist('all','var')
 
             % in original script, it checks data to make sure cells that 
@@ -54,7 +52,6 @@ for this_day = 1:size(Settings.paths,1)
 
             disp(' ()_()')
             disp("(='.'=)")
-
             % extract variables
             probe_trials = Settings.probe_trials ;
             bin_size = Settings.bin_size ; % cm
@@ -203,8 +200,8 @@ for this_day = 1:size(Settings.paths,1)
 
                         comparison_type(this_comparison,:) = [EP1 EP2];
                         tuning_curves_for_this_comparison{this_comparison,1} = tuning_curves{EP1 };
-                        tuning_curves_for_this_comparison{this_comparison,2} = tuning_curves{EP2 };
-
+                        tuning_curves_for_this_comparison{this_comparison,2} = tuning_curves{EP2 };                        
+    
                         % imagesc plot
                         %sorts by the maximum firing rate of the each cell
                         [~,max_bin1] = max(tuning_curves_for_this_comparison{this_comparison,1},[],2);
