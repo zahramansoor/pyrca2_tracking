@@ -3,10 +3,10 @@
 %% ========================================================================
 % Settings:
 epochstructure = 'cs_table_last8trials.mat';
-cd ('H:\optodata_yiru\E186\days\D48\hrz_master_output_8trials')
+cd ('Z:\HRZ_master_output8trials')
 load(epochstructure)
-load('H:\optodata_yiru\E186\days\D48\hrz_master_output_CS_table_all_trials\CS_trial_by_trial_probes_all.mat')
-Summary=readtable("J:\optodata\E186\Summary.xlsx")
+load('Z:\HRZ_master_outputCS_table_all_trials\CS_trial_by_trial_probes_all.mat')
+% Summary=readtable("J:\optodata\E186\Summary.xlsx");
 
 splitted_epochstructure_name = split(epochstructure,'_');
 

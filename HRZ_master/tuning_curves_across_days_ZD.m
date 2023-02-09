@@ -1,5 +1,3 @@
- %% Master script to analyze Pyrs cell data from HRZ task
- 
  %%
 % Requires that your Fall structure has the aligned beahvioral variables
 % attached to it, in the format of VRselectstartendsplit. <-- align with
@@ -19,7 +17,7 @@ do_quality_control = true; % sometimes Suite2p finds cells with F = 0 that are d
                             
 %% MAIN SETTINGS ----------------------------------------------------------
 
-Settings.paths = dir("Z:\cellreg1month_Fmats\221206_YC_Fall.mat"); % you can set a specific day by substituting D* with D1 for example
+Settings.paths = dir("Z:\cellreg1month_Fmats\221207_YC_Fall.mat"); % you can set a specific day by substituting D* with D1 for example
 Settings.Fs = 32; % Hz
 Settings.level_mouse_name = 2; % at which level of the folder .path is the mouse name contained
 Settings.level_day = 2; % at which level of the folder .path is the day N contained
@@ -38,9 +36,6 @@ Settings.numIterations = 1000; % how many iterations for shuffled distribution
 if do_quality_control
 recreate_iscell_and_make_all_struct(Settings)  
 end
-
-
-%--------------------------------------------------------------------------
 %% Create the Epoch Table and figures
 % creates a folder with epoch table and create remapping anlysis figures
 % for each epoch.
@@ -52,23 +47,4 @@ Settings.saving_path = 'Z:\HRZ_master_output' ; % please just change the path wh
 Settings.probe_trials = 'exclude'; % DO NOT change. Probe trials are excluded from the analysis.
 Settings.trials_2compare = 8; % take the last 8 trials of one epoch
 Settings.I_want2save_figures = true; % save figures for each epoch
-Settings.I_want2reanlyze = true; % start table from scratch 
-
-makeEpochTable(Settings)
-%--------------------------------------------------------------------------
-%% Create Trial Table
-% creates a folder with trials table 
-
-Settings.saving_path = 'Z:\HRZ_master_output';
-Settings.probe_trials = 'intra_all'; % DO NOT change. Probe trials are included in the analysis.
-Settings.I_want2reanlyze = true;
-
-make_trial_Tab(Settings)
-%--------------------------------------------------------------------------
-%% Final figures
-% check settings and saving paths
-
-plot_from_trialsTable_epochTable
-
-%plot_from_table_cs_table
-%plot_from_table_trial_by_trials_probesCS
+Settings.I_want2reanlyze = false; % start table from scratch 

@@ -1,6 +1,5 @@
 function recreate_iscell_and_make_all_struct(Settings)
 
-figure('Renderer', 'painters', 'Position', [50 50 1000 300])
 for this_day = 1:size(Settings.paths,1)
 
     clearvars -except this_day Settings
@@ -16,41 +15,24 @@ for this_day = 1:size(Settings.paths,1)
    %skewdcells = find(skewness(l.F,1,2)<2); %looks at skewness of cells, <2 --> interneurons; if omitted, gets all cells
    %l.iscell(skewdcells,1) = 0;
    disp ([file ' ... loaded'])
-
-    remove_iscell = [];
-    this_real_cell = 0;
-    for this_cell = 1: size(l.F,1)
-        if l.iscell(this_cell,1)==1
-            this_real_cell = this_real_cell+1;
-            f_this_cell = l.F(this_cell,:);
-            f0_this_cell = l.Fneu(this_cell,:);
-            if sum(f_this_cell)==0
-
-                plot(f_this_cell)
-                hold on
-                plot(f0_this_cell)
-                hold off
-                remove_iscell(this_real_cell) = 1;
-                drawnow;
-            else
-                remove_iscell(this_real_cell) = 0;
-            end
-        end
-       
+    %don't remove iscells==0, unnecessary for this analysis
+    try
+        zdtest=l.all; % ZD added
     end
-    if ~exist('all','var') || size(all.dff,1) ~= size(remove_iscell,2)
+    if exist('zdtest', 'var')
+        all=l.all; % ZD added
+    end
+    if ~exist('all','var')
         disp('problem with all variable ')
         disp('..recreating all structure.. ')
-        
-        cells = l.iscell(:,1)== 1 ;
+        [x,y]=size(l.F);
+        cells = ones(1,x) ; %take all cells
 
         cd(Settings.paths(this_day).folder)
         all = create_all_structure(l.F,l.Fneu,l.spks,Settings.Fs,cells);
-        save( "Fall.mat" , 'all','-append') 
+        save(file , 'all','-append') 
         disp('done recreating all !')
     end
-        save( file , 'remove_iscell','-append')
-    
     disp ([file ' ... done!'])
 end
 end
