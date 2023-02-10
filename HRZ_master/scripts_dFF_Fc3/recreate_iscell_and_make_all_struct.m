@@ -6,10 +6,11 @@ for this_day = 1:size(Settings.paths,1)
 %     should_be_analyzed = 1;
 
     file =fullfile(Settings.paths(this_day).folder,Settings.paths(this_day).name);
-%     directory = file;
-%     info = split(directory,'/');
-%     mouse_cd = string(info{Settings.level_mouse_name});
-%     day_cd = string(info{Settings.level_day});
+    directory = file;
+    info = split(directory,'\');
+    mouse_cd = string(info{Settings.level_mouse_name});
+    day_cd = num2str(string(info{Settings.level_day})); % num2str for zahra's folder structure
+    day=str2num(day_cd(2:end));
 
    l = load(file);
    %skewdcells = find(skewness(l.F,1,2)<2); %looks at skewness of cells, <2 --> interneurons; if omitted, gets all cells

@@ -17,11 +17,11 @@ do_quality_control = true; % sometimes Suite2p finds cells with F = 0 that are d
                             
 %% MAIN SETTINGS ----------------------------------------------------------
 
-Settings.paths = dir("Z:\cellreg1month_Fmats\221208_YC_Fall.mat"); % you can set a specific day by substituting D* with D1 for example
+Settings.paths = dir(fullfile("Z:\cellreg1month_Fmats\E186\d*", '**\*.mat*')); % you can set a specific day by substituting D* with D1 for example
 Settings.Fs = 32; % Hz
-Settings.level_mouse_name = 2; % at which level of the folder .path is the mouse name contained
-%Settings.level_day = 2; % at which level of the folder .path is the day N contained
-Settings.day = 3; %important to change!!!
+Settings.level_mouse_name = 3; % at which level of the folder .path is the mouse name contained
+Settings.level_day = 4; % at which level of the folder .path is the day N contained
+%Settings.day = 11; %important to change!!! if running single mouse
 Settings.gainVR = 0.66; % which gain was used in these recordings
 Settings.bin_size = 5 * Settings.gainVR; % cm
 Settings.UL_track = 180; % Upper Limit of the track
