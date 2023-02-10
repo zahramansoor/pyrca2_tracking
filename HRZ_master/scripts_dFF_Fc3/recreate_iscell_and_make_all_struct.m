@@ -18,7 +18,7 @@ for this_day = 1:size(Settings.paths,1)
     %don't remove iscells==0, unnecessary for this analysis
     %filter by only common cells
     %e.g. first day
-    cells = ismember([1:size(l.iscell)],Settings.commoncells.cc)';
+    cells = ismember([1:size(l.iscell)],Settings.commoncells.cc(:,Settings.day))'; 
 
     try
         all=l.all; % ZD added

@@ -16,9 +16,9 @@ bin_size = 3.3; %cm remember to adjust for gain
 
 for this_comparison = 1: height(cs_table)
     
-    mouse_cd = cs_table.mouse{this_comparison};
-    day_cd = cs_table.Day{this_comparison};
-    experment_type = char(Summary.experiment(strcmp(Summary.E186,day_cd)));
+    mouse_cd = cs_table.mouse(this_comparison);
+    day_cd = cs_table.Day(this_comparison);
+    experiment_type = 'tracking';
 
     EP1 = cs_table.comparison_type (this_comparison, 1);
     EP2 = cs_table.comparison_type (this_comparison, 2);
@@ -45,7 +45,7 @@ for this_comparison = 1: height(cs_table)
     axis padded
     %                             axis off
 
-    title(fig,[char(mouse_cd) '; ' char(day_cd) ' ' experment_type],[ 'ep' num2str(EP1) ' vs. ep' num2str(EP2) ' RankSum p = ' num2str(cs_table.RankSumP(this_comparison)) ' ; ' splitted_epochstructure_name{3} ' trials comparison'])
+    title(fig,[char(mouse_cd) '; ' char(day_cd) ' ' experiment_type],[ 'ep' num2str(EP1) ' vs. ep' num2str(EP2) ' RankSum p = ' num2str(cs_table.RankSumP(this_comparison)) ' ; ' splitted_epochstructure_name{3} ' trials comparison'])
     %                             legend({'real',['median real = ' num2str(median(real_distribution,'all'))],...
     %                                 'shuffled',['median shuffle = ' num2str(median(shuffled_distribution,'all'))]},'Location','northwest')
     legend({'shuffled',['median shuffle = ' num2str(median(shuffled_distribution,'all'))],...
@@ -65,7 +65,7 @@ for this_comparison = 1: height(cs_table)
     this_mouse_this_day_EP1 = intersect(this_mouse_this_day,this_EP1);
     this_mouse_this_day_EP2 = intersect(this_mouse_this_day,this_EP2);
 
-    rew_location1 = mean(table_trial_by_trial_probes_all_CS.rew_location(this_mouse_this_day_EP1),"omitnan");
+    rew_location1 = nanmean(table_trial_by_trial_probes_all_CS.rew_location(this_mouse_this_day_EP1),"omitnan");
     rew_location2 = mean(table_trial_by_trial_probes_all_CS.rew_location(this_mouse_this_day_EP2),"omitnan");
     rew_location1_index = rew_location1\bin_size;
     rew_location2_index = rew_location2\bin_size;

@@ -12,8 +12,8 @@ for this_day = 1:size(Settings.paths,1)
     directory = file;
     info = split(directory,'\');
     mouse_cd = string(info{Settings.level_mouse_name});
-    day_cd = string(info{Settings.level_day});
     n_trials2compare = Settings.trials_2compare;
+    day=Settings.day;
 
     folder_table = [Settings.saving_path num2str(n_trials2compare) 'trials'];
 
@@ -104,8 +104,7 @@ for this_day = 1:size(Settings.paths,1)
             %init length of tuning curves based on number of epochs in a
             %day
             tuning_curves = cell(1,nEpoch);
-            
-            
+                     
             nBins = UL_track/bin_size ;
 
             if nEpoch > 1
@@ -212,22 +211,22 @@ for this_day = 1:size(Settings.paths,1)
                         % ----
                         if Settings.I_want2save_figures
 
-                            figure('Renderer', 'painters', 'Position', [20 20 1000 700])
-                            fig = tiledlayout('flow');
-                            this = nexttile;
-
-                            imagesc(normalize(TC_imagesc,2))%imagesc(normalize(TC_imagesc,2,'range'))
+                            fig = figure('Renderer', 'painters', 'Position', [20 20 1000 700]);                            
+                            imagesc(normalize(TC_imagesc,2,'range'))%imagesc(normalize(TC_imagesc,2,'range'))
                             colormap(turbo)
                             xlabel('cm')
                             xticks([0 max([max_bin1; max_bin2])])
                             xticklabels([0 UL_track])
-                            title(this, 'TC last 8 trials',{['epoch ' num2str(EP1) ';epoch ' num2str(EP2)]})
-                      
+                            yticks(1:size(TC_imagesc,1))
+                            yticklabels(sorted_idx) %label with cell id number
+                            a = get(gca,'XTickLabel');
+                            set(gca,'XTickLabel',a,'FontName','Times','fontsize',10)
+                            title('TC last 8 trials',{['epoch ' num2str(EP1) ';epoch ' num2str(EP2)]})                      
                         end
                     end
 
                     mouse = repmat(mouse_cd, [N_of_epochs2compare, 1]);
-                    Day = repmat(day_cd, [N_of_epochs2compare, 1]);
+                    Day = repmat(day, [N_of_epochs2compare, 1]);
                     shuffled_CS_cell_index = shuffled_CS_cell_index';
                     % HERE
                     cs_table = table...

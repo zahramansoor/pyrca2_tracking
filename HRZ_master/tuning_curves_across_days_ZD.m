@@ -17,10 +17,11 @@ do_quality_control = true; % sometimes Suite2p finds cells with F = 0 that are d
                             
 %% MAIN SETTINGS ----------------------------------------------------------
 
-Settings.paths = dir("Z:\cellreg1month_Fmats\221206_YC_Fall.mat"); % you can set a specific day by substituting D* with D1 for example
+Settings.paths = dir("Z:\cellreg1month_Fmats\221208_YC_Fall.mat"); % you can set a specific day by substituting D* with D1 for example
 Settings.Fs = 32; % Hz
 Settings.level_mouse_name = 2; % at which level of the folder .path is the mouse name contained
-Settings.level_day = 2; % at which level of the folder .path is the day N contained
+%Settings.level_day = 2; % at which level of the folder .path is the day N contained
+Settings.day = 3; %important to change!!!
 Settings.gainVR = 0.66; % which gain was used in these recordings
 Settings.bin_size = 5 * Settings.gainVR; % cm
 Settings.UL_track = 180; % Upper Limit of the track
@@ -48,3 +49,5 @@ Settings.probe_trials = 'exclude'; % DO NOT change. Probe trials are excluded fr
 Settings.trials_2compare = 8; % take the last 8 trials of one epoch
 Settings.I_want2save_figures = true; % save figures for each epoch
 Settings.I_want2reanlyze = false; % start table from scratch 
+
+makeEpochTable_ZD(Settings)

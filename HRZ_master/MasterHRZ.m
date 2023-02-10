@@ -19,7 +19,7 @@ do_quality_control = true; % sometimes Suite2p finds cells with F = 0 that are d
                             
 %% MAIN SETTINGS ----------------------------------------------------------
 
-Settings.paths = dir("Z:\cellreg1month_Fmats\221206_YC_Fall.mat"); % you can set a specific day by substituting D* with D1 for example
+Settings.paths = dir("Z:\cellreg1month_Fmats\221207_YC_Fall.mat"); % you can set a specific day by substituting D* with D1 for example
 Settings.Fs = 32; % Hz
 Settings.level_mouse_name = 2; % at which level of the folder .path is the mouse name contained
 Settings.level_day = 2; % at which level of the folder .path is the day N contained
