@@ -37,13 +37,9 @@ week2cells_across_weeks=week2(ismember(week2(:,end),commoncells_4weeks(:,2)),:);
 week3cells_across_weeks=week3(ismember(week3(:,end),commoncells_4weeks(:,3)),:);
 week4cells_across_weeks=week4(ismember(week4(:,end),commoncells_4weeks(:,4)),:);
 %find cells that exist all 4 weeks?
-allcells_across_weeks = zeros(length(commoncells_4weeks),sessions_week);
+allcells_across_weeks = zeros(length(commoncells_4weeks),sessions_total);
 for w=1:length(commoncells_4weeks)
-    if sum(commoncells_4weeks(w,1)==week1cells_across_weeks(:,end)) && sum(commoncells_4weeks(w, ...
-            2)==week2cells_across_weeks(:,end)) && sum(commoncells_4weeks(w,3)==week3cells_across_weeks(:, ...
-            end)) && sum(commoncells_4weeks(w,4)==week4cells_across_weeks(:, end))
-        allcells_across_weeks(w,:)=commoncells_4weeks(w,:);
-    end
+    if sum(commoncells_4weeks(w,1)==week1cells_across_weeks(:,end)) && sum(commoncells_4weeks(w,1)==week1cells_across_weeks(:,end))
 end
 
 % figures for validation
