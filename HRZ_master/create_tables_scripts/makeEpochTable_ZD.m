@@ -239,7 +239,7 @@ for this_day = 1:size(Settings.paths,1)
                         save([Settings.saving_path num2str(n_trials2compare) 'trials\cs_table_last' num2str(n_trials2compare) 'trials'],'cs_table', '-v7.3')
                     else
                         save([Settings.saving_path num2str(n_trials2compare) 'trials\', ...
-                            sprintf('%s_d%03d_cs_table_last', mouse, day) num2str(n_trials2compare) 'trials'], 'cs_table', '-v7.3')
+                            sprintf('%s_d%03d_cs_table_last', mouse_cd, day) num2str(n_trials2compare) 'trials'], 'cs_table', '-v7.3')
                     end
 
                 end
