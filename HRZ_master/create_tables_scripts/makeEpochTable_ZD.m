@@ -241,6 +241,100 @@ for this_day = 1:size(Settings.paths,1)
                         save([Settings.saving_path num2str(n_trials2compare) 'trials\', ...
                             sprintf('%s_d%03d_cs_table_last', mouse_cd, day) num2str(n_trials2compare) 'trials'], 'cs_table', '-v7.3')
                     end
+                else % for days with only 1 epoch
+                    N_cells = size(tuning_curves{1},1)  ;
+                    cs_distributions = cell(N_cells, nEpoch );
+                    p = nan(N_cells,1);
+                    epochs2compare = nchoosek(1:sum(cellfun(@(x) ~isempty(x),tuning_curves)),2);                    
+                    N_of_epochs2compare = size(epochs2compare ,1);
+                    comparison_type = nan(N_of_epochs2compare,2);
+                    shuffled_CS = cell(N_of_epochs2compare,1);
+                    real_CS = cell(N_of_epochs2compare,1);
+                    shuffled_distribution_count = cell(N_of_epochs2compare,1);
+                    real_distribution_count = cell(N_of_epochs2compare,1);
+                    RankSumP = nan(N_of_epochs2compare,1);
+                    RankSumH = nan(N_of_epochs2compare,1);
+                    RankSumSTATS = cell(N_of_epochs2compare,1);
+
+                    for this_comparison = 1 : N_of_epochs2compare
+
+                        EP1 = epochs2compare(this_comparison, 1);
+                        EP2 = epochs2compare(this_comparison, 2);
+                         %this is what actually calculates the tuning
+                         %curves
+                        for this_cell = 1 : N_cells
+                            x = tuning_curves{EP1 }(this_cell,:) ;
+                            y = tuning_curves{EP2 }(this_cell,:) ;
+
+                            if getCosineSimilarity(x,y)<0 % had to move this function/script to 'Analysis'
+                                keyboard
+                            else
+
+                                cs = getCosineSimilarity(x,y);
+                                real_CS{this_comparison}(this_cell,1) = cs;
+                                shuffled_CS{this_comparison}{this_cell,1} = nan(1,numIterations);
+                            end
+
+                            for i = 1 : numIterations
+                                random_comparison_cell_index = randperm(n_cells,1);
+                                random_y = tuning_curves{EP2} (random_comparison_cell_index,:);
+                                if getCosineSimilarity(x,y)<0
+                                    keyboard
+                                else
+                                    cs = getCosineSimilarity(x,random_y);
+                                    shuffled_CS{this_comparison}{this_cell,1}(i) = cs;
+                                    shuffled_CS_cell_index{this_comparison}{this_cell,1}(i) = random_comparison_cell_index;
+                                end
+                            end
+
+                            random_cs = shuffled_CS{this_comparison}{this_cell,1};
+                            real_cs = real_CS{this_comparison}(this_cell,1);
+                            p(this_cell) = sum(random_cs > real_cs)\numIterations ;
+                        end
+
+                        comparison_type(this_comparison,:) = [EP1 EP2];
+                        tuning_curves_for_this_comparison{this_comparison,1} = tuning_curves{EP1 };
+                        tuning_curves_for_this_comparison{this_comparison,2} = tuning_curves{EP2 };                        
+    
+                        % imagesc plot
+                        %sorts by the maximum firing rate of the each cell
+                        [~,max_bin1] = max(tuning_curves_for_this_comparison{this_comparison,1},[],2);
+                        [~,max_bin2] = max(tuning_curves_for_this_comparison{this_comparison,2},[],2);
+                        [~,sorted_idx] = sort(max_bin1);
+
+                        TC_imagesc = [tuning_curves_for_this_comparison{this_comparison,1}(sorted_idx,:) tuning_curves_for_this_comparison{this_comparison,2}(sorted_idx,:)];
+                        % ----
+                        if Settings.I_want2save_figures
+
+                            fig = figure('Renderer', 'painters', 'Position', [20 20 1000 700]);                            
+                            imagesc(normalize(TC_imagesc,2,'range'))%imagesc(normalize(TC_imagesc,2,'range'))
+                            colormap(turbo)
+                            xlabel('cm')
+                            xticks([0 max([max_bin1; max_bin2])])
+                            xticklabels([0 UL_track])
+                            yticks(1:size(TC_imagesc,1))
+                            yticklabels(sorted_idx) %label with cell id number
+                            a = get(gca,'XTickLabel');
+                            set(gca,'XTickLabel',a,'FontName','Times','fontsize',8)
+                            title(['Day=' day_cd '; TC last 8 trials'],{['epoch ' num2str(EP1) ';epoch ' num2str(EP2)]})                      
+                        end
+                    end
+
+                    mouse = repmat(mouse_cd, [N_of_epochs2compare, 1]);
+                    Day = repmat(day, [N_of_epochs2compare, 1]);
+                    shuffled_CS_cell_index = shuffled_CS_cell_index';
+                    % HERE
+                    cs_table = table...
+                        (mouse,Day,comparison_type,tuning_curves_for_this_comparison,real_CS,shuffled_CS,shuffled_CS_cell_index,...
+                        real_distribution_count,shuffled_distribution_count,RankSumP,RankSumH,RankSumSTATS);
+
+                    if exist('CS','var') && sum((strcmp(CS.cs_table.Day,day_cd) + strcmp(CS.cs_table.mouse,mouse_cd))==2)==0
+                        cs_table = vertcat(CS.cs_table, cs_table);
+                        save([Settings.saving_path num2str(n_trials2compare) 'trials\cs_table_last' num2str(n_trials2compare) 'trials'],'cs_table', '-v7.3')
+                    else
+                        save([Settings.saving_path num2str(n_trials2compare) 'trials\', ...
+                            sprintf('%s_d%03d_cs_table_last', mouse_cd, day) num2str(n_trials2compare) 'trials'], 'cs_table', '-v7.3')
+                    end
 
                 end
             end
