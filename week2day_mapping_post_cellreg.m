@@ -342,7 +342,7 @@ for d=1:length(days)
 end
 %%
 % plot
-%cellno=34; % cell to align
+cellno=2; % cell to align
 optodays=[5,6,7,9,10,11,13,14,16,17,18];
 for cellno=1:length(cc) %or align all cells hehe
     figure;
