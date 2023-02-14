@@ -187,7 +187,7 @@ save("Z:\week2day_mapping_cellreg\commoncells_4weeks_week2daymap.mat", "cc")
 ctab = hsv(length(cc));
 
 % load mats from all days
-fls = dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');%dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');
+fls = dir(fullfile('Z:\cellreg1month_Fmats\', '**\*YC_Fall.mat'));%dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');
 days = cell(1, length(fls));
 for fl=1:length(fls)
     day = fls(fl);
@@ -313,6 +313,17 @@ title(han,sprintf('Cell no. %03d', cellno));
 savefig(sprintf('Z:\\cellregtest_behavior\\cell_%05d_days%02d_%02d_%02d_%02d_%02d.fig', cellno, days_to_plot))
 
 %%
+%only load if saved data from previous run
+load("Z:\week2day_mapping_cellreg\commoncells_4weeks_week2daymap.mat")
+load('Z:\\dff_221206-30.mat')
+% load mats from all days
+fls = dir(fullfile('Z:\cellreg1month_Fmats\', '**\*YC_Fall.mat'));%dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');
+days = cell(1, length(fls));
+for fl=1:length(fls)
+    day = fls(fl);
+    days{fl} = load(fullfile(day.folder,day.name));
+end
+
 % align to behavior (rewards and solenoid) for each cell?
 % per day, get this data...
 range=5;
