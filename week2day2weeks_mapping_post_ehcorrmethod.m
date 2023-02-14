@@ -2,7 +2,6 @@
 % get cells detected in cellreg AND ed's software and do analysis
 
 clear all
-load('Z:\imaging_yc\week1\suite2p\plane0\LUT_clean_wo_dup_EHmethod.mat')
  
 % load mats from all days
 % fls = dir('Z:\week2day_mapping_cellreg\week1\*YC_Fall.mat');%dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');
@@ -12,10 +11,10 @@ load('Z:\imaging_yc\week1\suite2p\plane0\LUT_clean_wo_dup_EHmethod.mat')
 %     days{fl} = load(fullfile(day.folder,day.name));
 % end
 
-week1=load('Z:\imaging_yc\week1\suite2p\plane0\LUT_clean_wo_dup_EHmethod.mat').LUT_clean;
-week2=load('Z:\imaging_yc\week2\suite2p\plane0\LUT_clean_wo_dup_EHmethod.mat').LUT_clean;
-week3=load('Z:\imaging_yc\week3\suite2p\plane0\LUT_clean_wo_dup_EHmethod.mat').LUT_clean;
-week4=load('Z:\imaging_yc\week4\suite2p\plane0\LUT_clean_wo_dup_EHmethod.mat').LUT_clean;
+week1=load('Z:\imaging_yc\week1\suite2p\plane0\LUT_clean_wo_dup_EHmethod_noiscell.mat').LUT_clean;
+week2=load('Z:\imaging_yc\week2\suite2p\plane0\LUT_clean_wo_dup_EHmethod_noiscell.mat').LUT_clean;
+week3=load('Z:\imaging_yc\week3\suite2p\plane0\LUT_clean_wo_dup_EHmethod_noiscell.mat').LUT_clean;
+week4=load('Z:\imaging_yc\week4\suite2p\plane0\LUT_clean_wo_dup_EHmethod_noiscell.mat').LUT_clean;
 weeks=load('C:\Users\Han\Documents\MATLAB\CellReg\ZD_across4weeks_20230201\Results\cellRegistered_20230201_154819.mat');
 
 % find cells in all sessions
@@ -37,12 +36,18 @@ week2cells_across_weeks=week2(ismember(week2(:,end),commoncells_4weeks(:,2)),:);
 week3cells_across_weeks=week3(ismember(week3(:,end),commoncells_4weeks(:,3)),:);
 week4cells_across_weeks=week4(ismember(week4(:,end),commoncells_4weeks(:,4)),:);
 %find cells that exist all 4 weeks?
-allcells_across_weeks = zeros(length(commoncells_4weeks),sessions_week);
-for w=1:length(commoncells_4weeks)
-    if sum(commoncells_4weeks(w,1)==week1cells_across_weeks(:,end)) && sum(commoncells_4weeks(w, ...
-            2)==week2cells_across_weeks(:,end)) && sum(commoncells_4weeks(w,3)==week3cells_across_weeks(:, ...
-            end)) && sum(commoncells_4weeks(w,4)==week4cells_across_weeks(:, end))
-        allcells_across_weeks(w,:)=commoncells_4weeks(w,:);
+week1cells_to_map=commoncells_4weeks(:,1); % start with all cells across weeks
+sessions_total=20;
+cellmap2dayacrossweeks=zeros(length(week1cells_to_map),sessions_total);
+for w=1:length(week1cells_to_map)
+    week1cell=week1cells_to_map(w);
+    daysweek1cell=week1(find(week1(:,end)==week1cell),1:end-1);
+    cell_across_weeks=commoncells_4weeks(find(commoncells_4weeks(:,1)==week1cell),:);
+    daysweek2cell=week2(find(week2(:,end)==cell_across_weeks(2)),1:end-1); % 1:end-1 to remove week column
+    daysweek3cell=week3(find(week3(:,end)==cell_across_weeks(3)),1:end-1);
+    daysweek4cell=week4(find(week4(:,end)==cell_across_weeks(4)),1:end-1);
+    if ~isempty(daysweek1cell) && ~isempty(daysweek2cell) && ~isempty(daysweek3cell) && ~isempty(daysweek4cell) %make sure cell exists across all days
+        cellmap2dayacrossweeks(w,:)=[daysweek1cell,daysweek2cell,daysweek3cell,daysweek4cell];
     end
 end
 
@@ -54,7 +59,7 @@ cc=cellmap2dayacrossweeks(all(cellmap2dayacrossweeks,2),:);%only gets non zero e
 ctab = hsv(length(cc));
 
 % load mats from all days
-fls = dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');%dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');
+fls = dir(fullfile('Z:\cellreg1month_Fmats\', '**\*YC_Fall.mat'));%dir('Z:\cellreg1month_Fmats\*YC_Fall.mat');
 days = cell(1, length(fls));
 for fl=1:length(fls)
     day = fls(fl);
@@ -72,7 +77,7 @@ for i=1:length(cc)
         colormap('gray')
         hold on;
         try
-            %plot(day.stat{1,cc(i,ss)}.xpix, day.stat{1,cc(i,ss)}.ypix, 'Color', [ctab(i,:) 0.3]);
+            plot(day.stat{1,cc(i,ss)}.xpix, day.stat{1,cc(i,ss)}.ypix, 'Color', [ctab(i,:) 0.3]);
         catch
             print(cc(i))
         end

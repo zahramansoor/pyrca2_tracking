@@ -88,7 +88,9 @@ end
 cd (all_path); %set path
 templ_all=load('Fall.mat');%in concat day folder
 F_all=templ_all.F';
-rois = find(templ_all.iscell(:,1));%Nx1 vector with index of iscell=1, template cells
+rois = [1:size(F_all',1)]';
+%ignore iscell distinguish, zd edit 
+%find(templ_all.iscell(:,1));%Nx1 vector with index of iscell=1, template cell s
 %preallocate, variables below filled at end of loop
 frames=zeros(numDays,1);%keep track of #frames per day
 dayStart=zeros(numDays,1);%keep track 1st frame of days
@@ -114,15 +116,18 @@ all_spks= NaN(size(templ_all.F));
 % day.stat(day,1);
 endIdx=0;
 
-
+src = 'Z:\cellreg1month_Fmats\E186\';
 %daysnm={'221206_YC', '221207_YC', '221208_YC', '221209_YC'};
-%daysnm={'221211_YC', '221212_YC', '221213_YC', '221214_YC', '221215_YC', '221216_YC', '221217_YC'};
-%daysnm={'221220_YC', '221221_YC', '221222_YC'};
-daysnm={'221225_YC', '221226_YC', '221227_YC', '221228_YC', '221229_YC', '221230_YC'};
+%daysnm={'221211_YC', '221212_YC', '221213_YC', '221214_YC','221215_YC', '221216_YC', '221217_YC'};
+%daysn=5:11;
+daysnm={'221220_YC', '221221_YC', '221222_YC'};
+daysn=12:14;
+% daysnm={'221225_YC', '221226_YC', '221227_YC', '221228_YC', '221229_YC', '221230_YC'};
+% daysn=15:20;
 for j = 1:numDays
     %inside loop with numDays, cd to dir with file
     cd (single_paths{j,1}); %set path
-    single=load(join([daysnm{j},'_Fall.mat'],''));%load single day, in single day folder
+    single=load(join([src,sprintf('d%03d',daysn(j)),'\',daysnm{j},'_Fall.mat'],''));%load single day, in single day folder
     %save Fall.mat for each day with as d1_Fall, d2_Fall, etc
     singles_all(j,:)=single;%gave mismatch error once when "redcell" was field in one file but not others
 
