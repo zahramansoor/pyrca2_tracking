@@ -221,7 +221,7 @@ for this_day = 1:size(Settings.paths,1)
                             yticks(1:size(TC_imagesc,1))
                             yticklabels(sorted_idx) %label with cell id number
                             a = get(gca,'XTickLabel');
-                            set(gca,'XTickLabel',a,'FontName','Times','fontsize',10)
+                            set(gca,'XTickLabel',a,'FontName','Times','fontsize',8)
                             title(['Day=' day_cd '; TC last 8 trials'],{['epoch ' num2str(EP1) ';epoch ' num2str(EP2)]})                      
                         end
                     end
@@ -238,7 +238,8 @@ for this_day = 1:size(Settings.paths,1)
                         cs_table = vertcat(CS.cs_table, cs_table);
                         save([Settings.saving_path num2str(n_trials2compare) 'trials\cs_table_last' num2str(n_trials2compare) 'trials'],'cs_table', '-v7.3')
                     else
-                        save([Settings.saving_path num2str(n_trials2compare) 'trials\cs_table_last' num2str(n_trials2compare) 'trials'],'cs_table', '-v7.3')
+                        save([Settings.saving_path num2str(n_trials2compare) 'trials\', ...
+                            sprintf('%s_d%03d_cs_table_last', mouse, day) num2str(n_trials2compare) 'trials'], 'cs_table', '-v7.3')
                     end
 
                 end
