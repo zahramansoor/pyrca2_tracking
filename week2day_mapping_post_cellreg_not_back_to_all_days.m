@@ -300,7 +300,12 @@ for fl=1:length(fls)
     day = fls(fl);
     days{fl} = load(fullfile(day.folder,day.name));
 end
-
+cc=cellmap2dayacrossweeks;
+%how many cells remain if excluding cells with more than 5 days of no
+%mapping?
+sum(sum(cc==0,2)<=5) %etc..
+% convert to 1 (temp)'s to bool for reward analysis
+cc(cc==0)=1;
 % align to behavior (rewards and solenoid) for each cell?
 % per day, get this data...
 range=5;
@@ -314,17 +319,17 @@ for d=1:length(days)
     % runs for all cells
     [binnedPerireward,allbins,rewdFF] = perirewardbinnedactivity(dff{d}',rewardsonly,day.timedFF,range,bin); %rewardsonly if mapping to reward
     % now extract ids only of the common cells
-    ccbinnedPerireward{d}=binnedPerireward;
-    ccrewdFF{d}=rewdFF;
+    ccbinnedPerireward{d}=binnedPerireward(cc(:,d),:);
+    ccrewdFF{d}=rewdFF(:,cc(:,d),:);
 end
 %%
 % plot
 cellno=2; % cell to align
 optodays=[5,6,7,9,10,11,13,14,16,17,18];
-for cellno=1:length(cc) %or align all cells hehe
+for cellno=20:30%length(cc) %or align all cells hehe
     figure;
     for d=1:length(days)
-        pltrew=ccbinnedPerireward{d};
+        pltrew=ccbinnedPerireward{d}; pltrew=pltrew(cc(:,d)>1,:); %temp hack that excludes cell #1
         if ~any(optodays(:)==d)            
             plot(pltrew(cellno,:)', 'Color', 'black')            
         else
