@@ -325,18 +325,18 @@ end
 %%
 % plot
 % if cell is missing from 1 day, take mean dff of others days from that
-% cell??? NOT implemented yet
+% cell?
 cellno=2; % cell to align
 optodays=[5,6,7,9,10,11,13,14,16,17,18];
-for cellno=1:length(cc) %or align all cells hehe
+for cellno=length(cc) %or align all cells hehe
     figure;
     for d=1:length(days)
         pltrew=ccbinnedPerireward{d}; %temp hack that excludes cell #1
-        try %if cell exists on that day, otherwise day is dropped...
+        try %if cell exists on that day
             if ~any(optodays(:)==d)            
-                plot(pltrew(cc(cellno,d),:)', 'Color', 'black')            
-            else
-                plot(pltrew(cc(cellno,d),:)', 'Color', 'red')    
+            plot(pltrew(cc(:,d)==1,:)', 'Color', 'black')            
+        else
+            plot(pltrew(cc(:,d)==1,:)', 'Color', 'red')    
             end
         end
         hold on;        
