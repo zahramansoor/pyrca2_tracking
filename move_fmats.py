@@ -6,7 +6,8 @@ Created on Mon Jan 30 10:59:23 2023
 """
 
 import os, shutil
-src = r"Z:\sstcre_imaging\e201"
+animal = "e201"
+src = os.path.join("Z:\sstcre_imaging", animal)
 dst = r"Z:\sstcre_analysis"
 # move all converted fmats to separate folder
 for i in os.listdir(src):
@@ -18,6 +19,6 @@ for i in os.listdir(src):
     mat = os.path.join(imgfl, "suite2p", "plane0", "Fall.mat") 
     if os.path.exists(mat):
         try:
-            shutil.copy(mat, os.path.join(dst, f"e200_day{int(i):03d}_Fall.mat"))
+            shutil.copy(mat, os.path.join(dst, f"{animal}_day{int(i):03d}_Fall.mat"))
         except: # for weeks
-            shutil.copy(mat, os.path.join(dst, f"e200_week{int(i[4:]):02d}_Fall.mat"))
+            shutil.copy(mat, os.path.join(dst, f"{animal}_week{int(i[4:]):02d}_Fall.mat"))

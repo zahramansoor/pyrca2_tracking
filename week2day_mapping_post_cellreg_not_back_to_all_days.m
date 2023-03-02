@@ -328,8 +328,10 @@ end
 % cell??? NOT implemented yet
 cellno=2; % cell to align
 optodays=[5,6,7,9,10,11,13,14,16,17,18];
-for cellno=1:length(cc) %or align all cells hehe
+for cellno=200:220%1:length(cc) %or align all cells hehe
+    dd=1; %for legend
     figure;
+    clear legg;
     for d=1:length(days)
         pltrew=ccbinnedPerireward{d}; %temp hack that excludes cell #1
         try %if cell exists on that day, otherwise day is dropped...
@@ -338,6 +340,7 @@ for cellno=1:length(cc) %or align all cells hehe
             else
                 plot(pltrew(cc(cellno,d),:)', 'Color', 'red')    
             end
+            legg{dd}=sprintf('day %d',d); dd=dd+1;
         end
         hold on;        
     end
@@ -347,5 +350,6 @@ for cellno=1:length(cc) %or align all cells hehe
     xticklabels([allbins(1:5:end) range]);
     xlabel('seconds')
     ylabel('dF/F')
+    legend(char(legg))
     title(sprintf('Cell no. %04d', cellno))
 end
