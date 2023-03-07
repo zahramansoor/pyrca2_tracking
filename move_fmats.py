@@ -8,14 +8,15 @@ Created on Mon Jan 30 10:59:23 2023
 import os, shutil
 animal = "e201"
 src = os.path.join("Z:\sstcre_imaging", animal)
-dst = r"Z:\sstcre_analysis"
+dst = r"Y:\sstcre_analysis\fmats"
+# get only days, not week fmats
+days = [int(xx) for xx in os.listdir(src) if  "week" not in xx and "ref" not in xx]
+days.sort()
 # move all converted fmats to separate folder
-for i in os.listdir(src):
+for i in days:
+    print(i)
     pth = os.path.join(src, str(i))
-    if "week" not in i: #week folders don't have sbx file
-        imgfl = [os.path.join(pth, xx) for xx in os.listdir(pth) if "000" in xx][0]
-    else:
-        imgfl = pth
+    imgfl = [os.path.join(pth, xx) for xx in os.listdir(pth) if "000" in xx][0]
     mat = os.path.join(imgfl, "suite2p", "plane0", "Fall.mat") 
     if os.path.exists(mat):
         try:
